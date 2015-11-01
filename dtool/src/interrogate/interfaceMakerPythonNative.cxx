@@ -3990,9 +3990,9 @@ collapse_default_remaps(std::map<int, std::set<FunctionRemap *> > &map_sets,
       std::set<FunctionRemap *>::iterator sii;
       for (sii = rmi->second.begin(); sii != rmi->second.end(); ++sii) {
         FunctionRemap *remap = (*sii);
-        int pn = rmi->first - 1;
-        if (remap->_has_this && remap->_type != FunctionRemap::T_constructor) {
-          ++pn;
+        size_t pn = (size_t)rmi->first;
+        if (!remap->_has_this || remap->_type == FunctionRemap::T_constructor) {
+          --pn;
         }
         nassertd(pn < remap->_parameters.size()) goto abort_iteration;
 
@@ -4345,8 +4345,8 @@ write_function_forset(ostream &out,
 
       for (sii = remaps.begin(); sii != remaps.end(); ++sii) {
         remap = (*sii);
-        if (remap->_parameters.size() > (int)remap->_has_this) {
-          ParameterRemap *param = remap->_parameters[(int)remap->_has_this]._remap;
+        if (remap->_parameters.size() > (size_t)remap->_has_this) {
+          ParameterRemap *param = remap->_parameters[(size_t)remap->_has_this]._remap;
           string param_name = param->get_orig_type()->get_local_name(&parser);
 
           if (param_name != "CPT_InternalName" &&
@@ -4601,15 +4601,15 @@ write_function_instance(ostream &out, FunctionRemap *remap,
   if (remap->_has_this) {
     num_params += 1;
   }
-  if (num_params > remap->_parameters.size()) {
+  if (num_params > (int)remap->_parameters.size()) {
     // Limit to how many parameters this remap actually has.
-    num_params = remap->_parameters.size();
+    num_params = (int)remap->_parameters.size();
     max_num_args = num_params;
     if (remap->_has_this) {
       --max_num_args;
     }
   }
-  nassertv(num_params <= remap->_parameters.size());
+  nassertv(num_params <= (int)remap->_parameters.size());
 
   bool only_pyobjects = true;
 
@@ -6352,7 +6352,7 @@ write_make_seq(ostream &out, Object *obj, const std::string &ClassName,
       << "\n"
       << "  PyObject *getter = PyDict_GetItemString(Dtool_" << ClassName << "._PyType.tp_dict, \"" << element_name << "\");\n"
       << "  if (getter == (PyObject *)NULL) {\n"
-      << "    return NULL;\n"
+      << "    return Dtool_Raise_AttributeError(self, \"" << element_name << "\");\n"
       << "  }\n"
       << "\n"
       << "  Py_ssize_t count = (Py_ssize_t)local_this->" << make_seq->_num_name << "();\n"
