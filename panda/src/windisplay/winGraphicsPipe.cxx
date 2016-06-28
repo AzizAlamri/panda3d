@@ -1,16 +1,15 @@
-// Filename: winGraphicsPipe.cxx
-// Created by:  drose (20Dec02)
-//
-////////////////////////////////////////////////////////////////////
-//
-// PANDA 3D SOFTWARE
-// Copyright (c) Carnegie Mellon University.  All rights reserved.
-//
-// All use of this software is subject to the terms of the revised BSD
-// license.  You should have received a copy of this license along
-// with this source code in a file named "LICENSE."
-//
-////////////////////////////////////////////////////////////////////
+/**
+ * PANDA 3D SOFTWARE
+ * Copyright (c) Carnegie Mellon University.  All rights reserved.
+ *
+ * All use of this software is subject to the terms of the revised BSD
+ * license.  You should have received a copy of this license along
+ * with this source code in a file named "LICENSE."
+ *
+ * @file winGraphicsPipe.cxx
+ * @author drose
+ * @date 2002-12-20
+ */
 
 #include "winGraphicsPipe.h"
 #include "config_windisplay.h"
@@ -31,6 +30,12 @@ TypeHandle WinGraphicsPipe::_type_handle;
 #ifndef MAXIMUM_PROCESSORS
 #define MAXIMUM_PROCESSORS 32
 #endif
+
+typedef enum _Process_DPI_Awareness {
+  Process_DPI_Unaware            = 0,
+  Process_System_DPI_Aware       = 1,
+  Process_Per_Monitor_DPI_Aware  = 2
+} Process_DPI_Awareness;
 
 typedef struct _PROCESSOR_POWER_INFORMATION {
   ULONG Number;
@@ -118,11 +123,11 @@ void get_memory_information (DisplayInformation *display_information) {
 }
 
 typedef union {
-  PN_uint64 long_integer;
+  uint64_t long_integer;
 }
 LONG_INTEGER;
 
-PN_uint64 cpu_time_function (void) {
+uint64_t cpu_time_function (void) {
 #ifdef _WIN64
   return __rdtsc();
 #else
@@ -383,7 +388,8 @@ int cpuid(int input_eax, CPU_ID_REGISTERS *cpu_id_registers) {
   state = false;
   __try {
     if (input_eax == 0) {
-      // the order of ecx and edx is swapped when saved to make a proper vendor string
+      // the order of ecx and edx is swapped when saved to make a proper
+      // vendor string
 #ifdef _WIN64
       __cpuid((int*)cpu_id_registers, input_eax);
       unsigned int tmp = cpu_id_registers->edx;
@@ -457,8 +463,8 @@ void parse_cpu_id(CPU_ID *cpu_id) {
     printf("    maximum_logical_processors %u\n", cpu_id->maximum_logical_processors);
     printf("    initial_apic_id %u\n", cpu_id->initial_apic_id);
 
-//    printf("  cache_line_size %u\n", cpu_id->cache_line_size);
-//    printf("  log_base_2_cache_line_size %u\n", cpu_id->log_base_2_cache_line_size);
+// printf("  cache_line_size %u\n", cpu_id->cache_line_size); printf("
+// log_base_2_cache_line_size %u\n", cpu_id->log_base_2_cache_line_size);
   }
 
   if (cpu_id->cpu_id_registers_0x80000000.eax >= 0x80000005) {
@@ -588,7 +594,7 @@ int update_cpu_frequency_function(int processor_number, DisplayInformation *disp
       processor_power_information = processor_power_information_array;
       for (i = 0; i < MAXIMUM_PROCESSORS; i++) {
         if (processor_power_information->Number == processor_number) {
-          PN_uint64 value;
+          uint64_t value;
 
           value = processor_power_information->MaxMhz;
           display_information->_maximum_cpu_frequency = value * 1000000;
@@ -656,7 +662,7 @@ count_number_of_cpus(DisplayInformation *display_information) {
       num_cpu_cores++;
 
       // A hyperthreaded core supplies more than one logical processor.
-      num_logical_cpus += count_bits_in_word((PN_uint64)(ptr->ProcessorMask));
+      num_logical_cpus += count_bits_in_word((uint64_t)(ptr->ProcessorMask));
     }
     ++ptr;
   }
@@ -672,30 +678,48 @@ count_number_of_cpus(DisplayInformation *display_information) {
 }
 
 
-////////////////////////////////////////////////////////////////////
-//     Function: WinGraphicsPipe::Constructor
-//       Access: Public
-//  Description:
-////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
 WinGraphicsPipe::
 WinGraphicsPipe() {
   char string [512];
 
   _supported_types = OT_window | OT_fullscreen_window;
 
-  // these fns arent defined on win95, so get dynamic ptrs to them
-  // to avoid ugly DLL loader failures on w95
+  // these fns arent defined on win95, so get dynamic ptrs to them to avoid
+  // ugly DLL loader failures on w95
   _pfnTrackMouseEvent = NULL;
 
   _hUser32 = (HINSTANCE)LoadLibrary("user32.dll");
   if (_hUser32 != NULL) {
     _pfnTrackMouseEvent =
       (PFN_TRACKMOUSEEVENT)GetProcAddress(_hUser32, "TrackMouseEvent");
+
+    if (dpi_aware) {
+      typedef HRESULT (WINAPI *PFN_SETPROCESSDPIAWARENESS)(Process_DPI_Awareness);
+      PFN_SETPROCESSDPIAWARENESS pfnSetProcessDpiAwareness =
+        (PFN_SETPROCESSDPIAWARENESS)GetProcAddress(_hUser32, "SetProcessDpiAwarenessInternal");
+
+      if (pfnSetProcessDpiAwareness == NULL) {
+        if (windisplay_cat.is_debug()) {
+          windisplay_cat.debug() << "Unable to find SetProcessDpiAwareness in user32.dll.\n";
+        }
+      } else {
+        if (windisplay_cat.is_debug()) {
+          windisplay_cat.debug() << "Calling SetProcessDpiAwareness().\n";
+        }
+        pfnSetProcessDpiAwareness(Process_Per_Monitor_DPI_Aware);
+      }
+    }
   }
 
 #ifdef HAVE_DX9
   // Use D3D to get display info.  This is disabled by default as it is slow.
   if (request_dxdisplay_information) {
+    if (windisplay_cat.is_debug()) {
+      windisplay_cat.debug() << "Using Direct3D 9 to fetch display information.\n";
+    }
     DisplaySearchParameters display_search_parameters_dx9;
     int dx9_display_information (DisplaySearchParameters &display_search_parameters_dx9, DisplayInformation *display_information);
     dx9_display_information(display_search_parameters_dx9, _display_information);
@@ -703,6 +727,9 @@ WinGraphicsPipe() {
 #endif
   {
     // Use the Win32 API to query the available display modes.
+    if (windisplay_cat.is_debug()) {
+      windisplay_cat.debug() << "Using EnumDisplaySettings to fetch display information.\n";
+    }
     pvector<DisplayMode> display_modes;
     DEVMODE dm = {0};
     dm.dmSize = sizeof(dm);
@@ -767,13 +794,11 @@ WinGraphicsPipe() {
   }
 }
 
-////////////////////////////////////////////////////////////////////
-//     Function: WinGraphicsPipe::lookup_cpu_data
-//       Access: Public, Virtual
-//  Description: Looks up the detailed CPU information and stores it
-//               in _display_information, if supported by the OS.
-//               This may take a second or two.
-////////////////////////////////////////////////////////////////////
+/**
+ * Looks up the detailed CPU information and stores it in
+ * _display_information, if supported by the OS. This may take a second or
+ * two.
+ */
 void WinGraphicsPipe::
 lookup_cpu_data() {
   char string [512];
@@ -785,8 +810,8 @@ lookup_cpu_data() {
   _display_information->_cpu_time_function = cpu_time_function;
 
   // determine CPU frequency
-  PN_uint64 time;
-  PN_uint64 end_time;
+  uint64_t time;
+  uint64_t end_time;
   LARGE_INTEGER counter;
   LARGE_INTEGER end;
   LARGE_INTEGER frequency;
@@ -878,11 +903,9 @@ lookup_cpu_data() {
   count_number_of_cpus(_display_information);
 }
 
-////////////////////////////////////////////////////////////////////
-//     Function: WinGraphicsPipe::Destructor
-//       Access: Public, Virtual
-//  Description:
-////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
 WinGraphicsPipe::
 ~WinGraphicsPipe() {
   if (_hUser32 != NULL) {
