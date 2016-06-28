@@ -12,8 +12,8 @@ rm ReleaseNotes
 cd lib
 rm libp3pystub.a
 
-mv _direct.a lib_panda3d_direct.a
-mv _core.a lib_panda3d_core.a
+mv direct.a lib_panda3d_direct.a
+mv core.a lib_panda3d_core.a
 mv egg.a lib_panda3d_egg.a
 mv fx.a lib_panda3d_fx.a
 mv ode.a lib_panda3d_ode.a
