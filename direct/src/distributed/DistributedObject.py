@@ -4,7 +4,7 @@ from panda3d.core import *
 from panda3d.direct import *
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.distributed.DistributedObjectBase import DistributedObjectBase
-from direct.showbase.PythonUtil import StackTrace
+from direct.showbase.PythonUtil import *
 #from PyDatagram import PyDatagram
 #from PyDatagramIterator import PyDatagramIterator
 
