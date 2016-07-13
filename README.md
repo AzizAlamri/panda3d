@@ -25,7 +25,8 @@ need Microsoft Visual Studio to build Panda3D, though - the relevant compilers
 are included as part of the Windows 7.1 SDK.
 
 You will also need to have the third-party dependency libraries available for
-the build scripts to use.  These are available from the [thirdparty repository](https://github.com/nirai-compiler/thirdparty).
+the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory.
+
 After acquiring these dependencies, you may simply build Panda3D from the
 command prompt using the following command:
 
@@ -34,21 +35,36 @@ compile.bat
 postbuild.bat
 ```
 
-_postbuild_ cleans up _built_ dir.
+_postbuild_ cleans up the _built_ dir.
 
 Linux
 -----
 
-TBA
+On Linux, you will need to obtain the relevant third-party dependencies for Nirai's Panda3D via means that your distro provides. You may visit [this manual page](https://www.panda3d.org/manual/index.php/Dependencies) for an overview of the various dependencies. 
+
+If you are on Ubuntu, this command should cover the
+third-party packages:
+
+```bash
+sudo apt-get install build-essential pkg-config python-dev libpng-dev libjpeg-dev libtiff-dev zlib1g-dev libssl-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxxf86dga-dev libxcursor-dev bison flex libfreetype6-dev libvorbis-dev libeigen3-dev libopenal-dev libode-dev libbullet-dev nvidia-cg-toolkit libgtk2.0-dev
+```
+
+After acquiring the dependencies, you may simply build Panda3D from the terminal 
+using the following command:
+
+```bash
+./compile.sh
+./postbuild.sh
+```
+
+_postbuild_ cleans up the _built_ dir.
 
 Mac OS X
 --------
 
-We build using g++. You may need to use [homebrew](http://brew.sh/) to
-obtain this.
+You will need to have the Mac OS X third-party dependencies available for 
+the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory. 
 
-You also need to have the Mac OS X third-party dependencies available for 
-the build scripts to use, which are available from the [thirdparty repository](https://github.com/nirai-compiler/thirdparty).
 After acquiring these dependencies, you may simply build Panda3D from the terminal 
 using the following command:
 
@@ -57,4 +73,4 @@ using the following command:
 ./postbuild.sh
 ```
 
-_postbuild_ cleans up _built_ dir.
+_postbuild_ cleans up the _built_ dir.
