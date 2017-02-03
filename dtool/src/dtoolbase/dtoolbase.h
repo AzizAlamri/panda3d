@@ -70,23 +70,25 @@
 #else
 // #pragma message("VC 6.0")
 #endif
+#endif  /* WIN32_VC */
+
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
 
 // Use NODEFAULT to optimize a switch() stmt to tell MSVC to automatically go
 // to the final untested case after it has failed all the other cases (i.e.
 // 'assume at least one of the cases is always true')
 #ifdef _DEBUG
-# define NODEFAULT  default: assert(0);
+#define NODEFAULT  default: assert(0); break;
+#elif defined(_MSC_VER)
+#define NODEFAULT  default: __assume(0);   // special VC keyword
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5) || __has_builtin(__builtin_unreachable)
+#define NODEFAULT  default: __builtin_unreachable();
 #else
-# define NODEFAULT  default: __assume(0);   // special VC keyword
+#define NODEFAULT
 #endif
 
-#else /* if !WIN32_VC */
-#ifdef _DEBUG
-# define NODEFAULT   default: assert(0);
-#else
-# define NODEFAULT
-#endif
-#endif  /* WIN32_VC */
 
 /*
   include win32 defns for everything up to WinServer2003, and assume
@@ -337,21 +339,26 @@ typedef struct _object PyObject;
 #define ALIGN_4BYTE
 #define ALIGN_8BYTE
 #define ALIGN_16BYTE
+#define ALIGN_32BYTE
 #define ALIGN_64BYTE
 #elif defined(_MSC_VER)
 #define ALIGN_4BYTE __declspec(align(4))
 #define ALIGN_8BYTE __declspec(align(8))
 #define ALIGN_16BYTE __declspec(align(16))
+#define ALIGN_32BYTE __declspec(align(32))
 #define ALIGN_64BYTE __declspec(align(64))
 #elif defined(__GNUC__)
 #define ALIGN_4BYTE __attribute__ ((aligned (4)))
 #define ALIGN_8BYTE __attribute__ ((aligned (8)))
 #define ALIGN_16BYTE __attribute__ ((aligned (16)))
+#define ALIGN_32BYTE __attribute__ ((aligned (32)))
 #define ALIGN_64BYTE __attribute__ ((aligned (64)))
 #else
 #define ALIGN_4BYTE
 #define ALIGN_8BYTE
 #define ALIGN_16BYTE
+#define ALIGN_32BYTE
+#define ALIGN_64BYTE
 #endif
 
 // Do we need to implement memory-alignment enforcement within the MemoryHook
@@ -372,7 +379,7 @@ typedef struct _object PyObject;
 // externally.
 #define MEMORY_HOOK_DO_ALIGN 1
 
-#elif defined(IS_OSX) || defined(_WIN64)
+#elif (defined(IS_OSX) || defined(_WIN64)) && !defined(__AVX__)
 // The OS-provided malloc implementation will do the required alignment.
 #undef MEMORY_HOOK_DO_ALIGN
 
