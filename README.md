@@ -59,10 +59,10 @@ using the following command:
 
 _postbuild_ cleans up the _built_ dir.
 
-Mac OS X
+macOS
 --------
 
-You will need to have the Mac OS X third-party dependencies available for 
+You will need to have the macOS third-party dependencies available for 
 the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory. 
 
 After acquiring these dependencies, you may simply build Panda3D from the terminal 
