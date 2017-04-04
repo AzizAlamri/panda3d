@@ -81,7 +81,7 @@ def msgpack_encode(dg, element):
         # Python does not distinguish between floats and doubles, so we send
         # everything as a double in MsgPack:
         dg.addUint8(0xcb)
-        dg.addFloat64(element)
+        dg.addBeFloat64(element)
     else:
         raise TypeError('Encountered non-MsgPack-packable value: %r' % element)
 
@@ -102,7 +102,7 @@ class AstronInternalRepository(ConnectionRepository):
     def __init__(self, baseChannel, serverId=None, dcFileNames = None,
                  dcSuffix = 'AI', connectMethod = None, threadedNet = None):
         if connectMethod is None:
-            connectMethod = self.CM_HTTP
+            connectMethod = self.CM_NATIVE
         ConnectionRepository.__init__(self, connectMethod, config, hasOwnerView = False, threadedNet = threadedNet)
         self.setClientDatagram(False)
         self.dcSuffix = dcSuffix
