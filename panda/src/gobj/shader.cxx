@@ -390,8 +390,10 @@ cp_dependency(ShaderMatInput inp) {
   if ((inp == SMO_model_to_view) ||
       (inp == SMO_view_to_model) ||
       (inp == SMO_model_to_apiview) ||
-      (inp == SMO_apiview_to_model) ||
-      (inp == SMO_view_to_world) ||
+      (inp == SMO_apiview_to_model)) {
+    dep |= SSD_transform;
+  }
+  if ((inp == SMO_view_to_world) ||
       (inp == SMO_world_to_view) ||
       (inp == SMO_view_x_to_view) ||
       (inp == SMO_view_to_view_x) ||
@@ -404,7 +406,7 @@ cp_dependency(ShaderMatInput inp) {
       (inp == SMO_dlight_x) ||
       (inp == SMO_plight_x) ||
       (inp == SMO_slight_x)) {
-    dep |= SSD_transform;
+    dep |= SSD_view_transform;
   }
   if ((inp == SMO_texpad_x) ||
       (inp == SMO_texpix_x) ||
@@ -426,7 +428,9 @@ cp_dependency(ShaderMatInput inp) {
       (inp == SMO_view_to_apiclip_x)) {
     dep |= SSD_shaderinputs;
 
-    if ((inp == SMO_alight_x) ||
+    if ((inp == SMO_texpad_x) ||
+        (inp == SMO_texpix_x) ||
+        (inp == SMO_alight_x) ||
         (inp == SMO_dlight_x) ||
         (inp == SMO_plight_x) ||
         (inp == SMO_slight_x) ||
@@ -449,7 +453,7 @@ cp_dependency(ShaderMatInput inp) {
       (inp == SMO_light_source_i_attrib)) {
     dep |= SSD_light;
     if (inp == SMO_light_source_i_attrib) {
-      dep |= SSD_transform;
+      dep |= SSD_view_transform;
     }
   }
   if ((inp == SMO_light_product_i_ambient) ||
