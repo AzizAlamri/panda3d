@@ -12,9 +12,11 @@ from distutils import sysconfig
 if sys.version_info >= (3, 0):
     import pickle
     import _thread as thread
+    import configparser
 else:
     import cPickle as pickle
     import thread
+    import ConfigParser as configparser
 
 SUFFIX_INC = [".cxx",".cpp",".c",".h",".I",".yxx",".lxx",".mm",".rc",".r"]
 SUFFIX_DLL = [".dll",".dlo",".dle",".dli",".dlm",".mll",".exe",".pyd",".ocx"]
@@ -2434,6 +2436,7 @@ def SetupVisualStudioEnviron():
     winsdk_ver = SDK["MSPLATFORM_VERSION"]
     if winsdk_ver.startswith('10.'):
         AddToPathEnv("PATH",    SDK["MSPLATFORM"] + "bin\\" + arch)
+        AddToPathEnv("PATH",    SDK["MSPLATFORM"] + "bin\\" + winsdk_ver + "\\" + arch)
 
         # Windows Kit 10 introduces the "universal CRT".
         inc_dir = SDK["MSPLATFORM"] + "Include\\" + winsdk_ver + "\\"
@@ -2630,6 +2633,8 @@ def SetupBuildEnvironment(compiler):
             pcbsd_inc = sysroot + "/usr/PCBSD/local/include"
             if os.path.isdir(pcbsd_inc):
                 SYS_INC_DIRS.append(pcbsd_inc)
+
+        null.close()
 
         # Print out the search paths
         if GetVerbose():
@@ -2858,6 +2863,22 @@ def CopyPythonTree(dstdir, srcdir, lib2to3_fixers=[], threads=0):
 ##
 ########################################################################
 
+cfg_parser = None
+
+def GetMetadataValue(key):
+    global cfg_parser
+    if not cfg_parser:
+        # Parse the metadata from the setup.cfg file.
+        cfg_parser = configparser.ConfigParser()
+        path = os.path.join(os.path.dirname(__file__), '..', 'setup.cfg')
+        assert cfg_parser.read(path), "Could not read setup.cfg file."
+
+    value = cfg_parser.get('metadata', key)
+    if key == 'classifiers':
+        value = value.strip().split('\n')
+    return value
+
+# This function is being phased out.
 def ParsePandaVersion(fn):
     try:
         f = open(fn, "r")
