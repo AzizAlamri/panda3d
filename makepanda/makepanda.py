@@ -1418,7 +1418,11 @@ def CompileIgate(woutd,wsrc,opts):
         ConditionalWriteFile(woutd, "")
         return (wobj, woutc, opts)
 
-    if not CrossCompiling():
+    prebuilt = LocateBinary('interrogate')
+    if prebuilt:
+        cmd = prebuilt
+
+    elif not CrossCompiling():
         # If we're compiling for this platform, we can use the one we've built.
         cmd = os.path.join(GetOutputDir(), 'bin', 'interrogate')
     else:
@@ -1474,7 +1478,8 @@ def CompileIgate(woutd,wsrc,opts):
             cmd += ' -D' + var + '=' + val
 
     #building = GetValueOption(opts, "BUILDING:")
-    #if (building): cmd += " -DBUILDING_"+building
+    #if (building): cmd += " -DBUILDING_"+building    
+
     cmd += ' -module ' + module + ' -library ' + library
     for x in wsrc:
         if (x.startswith("/")):
@@ -1503,7 +1508,11 @@ def CompileImod(wobj, wsrc, opts):
         CompileCxx(wobj, woutc, opts)
         return
 
-    if not CrossCompiling():
+    prebuilt = LocateBinary('interrogate_module')
+    if prebuilt:
+        cmd = prebuilt
+
+    elif not CrossCompiling():
         # If we're compiling for this platform, we can use the one we've built.
         cmd = os.path.join(GetOutputDir(), 'bin', 'interrogate_module')
     else:
@@ -1534,6 +1543,8 @@ def CompileLib(lib, obj, opts):
                 cmd += " /LTCG"
             if HasTargetArch():
                 cmd += " /MACHINE:" + GetTargetArch().upper()
+            if GetLinkAllStatic():
+                cmd += ' /ignore:4006 /ignore:4221'
             cmd += ' /OUT:' + BracketNameWithQuotes(lib)
             for x in obj:
                 if not x.endswith('.lib'):
@@ -1543,7 +1554,7 @@ def CompileLib(lib, obj, opts):
             # Choose Intel linker; from Jean-Claude
             cmd = 'xilink /verbose:lib /lib '
             if HasTargetArch():
-                cmd += " /MACHINE:" + GetTargetArch().upper()
+                cmd += " /MACHINE:" + GetTargetArch().upper()           
             cmd += ' /OUT:' + BracketNameWithQuotes(lib)
             for x in obj: cmd += ' ' + BracketNameWithQuotes(x)
             cmd += ' /LIBPATH:"C:\Program Files (x86)\Intel\Composer XE 2011 SP1\ipp\lib\ia32"'
@@ -2119,6 +2130,8 @@ def CompileAnything(target, inputs, opts, progress = None):
         return CompileLib(target, inputs, opts)
     elif origsuffix in SUFFIX_DLL or (origsuffix==".plugin" and GetTarget() != "darwin"):
         if (origsuffix==".exe"):
+            if GetLinkAllStatic():
+                return
             ProgressOutput(progress, "Linking executable", target)
         else:
             ProgressOutput(progress, "Linking dynamic library", target)

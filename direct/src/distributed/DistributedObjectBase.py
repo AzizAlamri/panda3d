@@ -1,4 +1,3 @@
-
 from direct.showbase.DirectObject import DirectObject
 from direct.directnotify.DirectNotifyGlobal import directNotify
 
@@ -93,3 +92,10 @@ class DistributedObjectBase(DirectObject):
 
     def hasParentingRules(self):
         return self.dclass.getFieldByName('setParentingRules') != None
+
+    def delete(self):
+        """
+        Overwrite this to handle cleanup right before this object
+        gets deleted.
+        """
+        pass
