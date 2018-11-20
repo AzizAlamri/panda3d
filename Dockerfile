@@ -5,7 +5,12 @@ MAINTAINER Hunter Ray <docker@judge.sh>
 ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get install -y software-properties-common
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+RUN apt-get update && apt-get install -y software-properties-common > /dev/null
 RUN add-apt-repository ppa:jonathonf/python-2.7
 RUN apt-get update && apt-get install -y \
   bison \
@@ -35,7 +40,8 @@ RUN apt-get update && apt-get install -y \
   python2.7-dev \
   python-setuptools \
   tzdata \
-  zlib1g-dev
+  zlib1g-dev \
+   > /dev/null
 RUN easy_install pip
 RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl
 
