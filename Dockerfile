@@ -5,6 +5,7 @@ MAINTAINER Hunter Ray <docker@judge.sh>
 ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+RUN apt-get update && apt-get install -y software-properties-common
 RUN add-apt-repository ppa:jonathonf/python-2.7
 RUN apt-get update && apt-get install -y \
   bison \
@@ -33,7 +34,6 @@ RUN apt-get update && apt-get install -y \
   patchelf \
   python2.7-dev \
   python-setuptools \
-  software-properties-common \
   tzdata \
   zlib1g-dev
 RUN easy_install pip
