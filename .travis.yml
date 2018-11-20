@@ -4,5 +4,5 @@ language: cpp
 services:
   - docker
   
-  script:
+script:
   - docker built -t judge2020/panda3d .
