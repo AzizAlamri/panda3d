@@ -1,11 +1,12 @@
 FROM ubuntu:16.04
 MAINTAINER Hunter Ray <docker@judge.sh>
 
+ENV DEBIAN_FRONTEND=noninteractive
 
 ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y locales > /dev/null
+RUN apt-get update && apt-get install -y locales > /dev/null
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
@@ -46,7 +47,7 @@ RUN apt-get update && apt-get install -y \
   zlib1g-dev \
    > /dev/null
 RUN easy_install pip
-RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl
+RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl > /dev/null
 
 COPY . /build
 WORKDIR /build
