@@ -13,6 +13,7 @@
 
 #include "configPageManager.h"
 #include "configDeclaration.h"
+#include "configVariableBool.h"
 #include "configVariableString.h"
 #include "configPage.h"
 #include "prcKeyRegistry.h"
@@ -37,7 +38,13 @@
 #include <algorithm>
 #include <ctype.h>
 
-ConfigPageManager *ConfigPageManager::_global_ptr = NULL;
+#ifndef _MSC_VER
+#include <dlfcn.h>
+#endif
+
+using std::string;
+
+ConfigPageManager *ConfigPageManager::_global_ptr = nullptr;
 
 /**
  * The constructor is private (actually, just protected, but only to avoid a
@@ -119,7 +126,7 @@ delete_explicit_page(ConfigPage *page) {
  *
  */
 void ConfigPageManager::
-output(ostream &out) const {
+output(std::ostream &out) const {
   out << "ConfigPageManager, "
       << _explicit_pages.size() + _implicit_pages.size()
       << " pages.";
@@ -129,7 +136,7 @@ output(ostream &out) const {
  *
  */
 void ConfigPageManager::
-write(ostream &out) const {
+write(std::ostream &out) const {
   check_sort_pages();
   out << _explicit_pages.size() << " explicit pages:\n";
 
@@ -173,7 +180,7 @@ write(ostream &out) const {
  */
 ConfigPageManager *ConfigPageManager::
 get_global_ptr() {
-  if (_global_ptr == (ConfigPageManager *)NULL) {
+  if (_global_ptr == nullptr) {
     _global_ptr = new ConfigPageManager;
   }
   return _global_ptr;
@@ -230,7 +237,7 @@ scan_auto_prc_dir(Filename &prc_dir) const {
     }
 
     // Didn't find it; too bad.
-    cerr << "Warning: unable to auto-locate config files in directory named by \""
+    std::cerr << "Warning: unable to auto-locate config files in directory named by \""
          << prc_dir << "\".\n";
     return false;
   }

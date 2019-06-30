@@ -20,15 +20,19 @@ Building Panda3D
 Windows
 -------
 
-We currently build using the Microsoft Visual C++ 2010 compiler.  You do not
-need Microsoft Visual Studio to build Panda3D, though - the relevant compilers
-are included as part of the Windows 7.1 SDK.
+You can build Panda3D with the Microsoft Visual C++ 2015 or 2017 compiler,
+which can be downloaded for free from the [Visual Studio site](https://visualstudio.microsoft.com/downloads/).
+You will also need to install the [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk),
+and if you intend to target Windows XP, you will also need the
+[Windows 7.1 SDK](https://www.microsoft.com/en-us/download/details.aspx?id=8279).
 
 You will also need to have the third-party dependency libraries available for
 the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory.
 
 After acquiring these dependencies, you may simply build Panda3D from the
-command prompt using the following command:
+command prompt using the following command.  (Change `14.1` to `14` if you are
+using Visual C++ 2015 instead of 2017.  Add the `--windows-sdk=10` option if
+you don't need to support Windows XP and did not install the Windows 7.1 SDK.)
 
 ```bash
 compile.bat
@@ -40,16 +44,16 @@ _postbuild_ cleans up the _built_ dir.
 Linux
 -----
 
-On Linux, you will need to obtain the relevant third-party dependencies for Nirai's Panda3D via means that your distro provides. You may visit [this manual page](https://www.panda3d.org/manual/index.php/Dependencies) for an overview of the various dependencies. 
+On Linux, you will need to obtain the relevant third-party dependencies for Nirai's Panda3D via means that your distro provides. You may visit [this manual page](https://www.panda3d.org/manual/index.php/Dependencies) for an overview of the various dependencies.
 
 If you are on Ubuntu, this command should cover the
 third-party packages:
 
 ```bash
-sudo apt-get install build-essential pkg-config python-dev libpng-dev libjpeg-dev libtiff-dev zlib1g-dev libssl-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxxf86dga-dev libxcursor-dev bison flex libfreetype6-dev libvorbis-dev libeigen3-dev libopenal-dev libode-dev libbullet-dev nvidia-cg-toolkit libgtk2.0-dev
+sudo apt-get install build-essential pkg-config python-dev libpng-dev libjpeg-dev libtiff-dev zlib1g-dev libssl-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxxf86dga-dev libxcursor-dev bison flex libfreetype6-dev libvorbis-dev libeigen3-dev libopenal-dev libode-dev libbullet-dev nvidia-cg-toolkit libgtk2.0-dev libassimp-dev libopenexr-dev
 ```
 
-After acquiring the dependencies, you may simply build Panda3D from the terminal 
+After acquiring the dependencies, you may simply build Panda3D from the terminal
 using the following command:
 
 ```bash
@@ -62,10 +66,10 @@ _postbuild_ cleans up the _built_ dir.
 macOS
 --------
 
-You will need to have the macOS third-party dependencies available for 
-the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory. 
+You will need to have the macOS third-party dependencies available for
+the build scripts to use. These are available from the [third-party repository](https://github.com/nirai-compiler/thirdparty). Place the third-party directory into your Panda3D source directory.
 
-After acquiring these dependencies, you may simply build Panda3D from the terminal 
+After acquiring these dependencies, you may simply build Panda3D from the terminal
 using the following command:
 
 ```bash
