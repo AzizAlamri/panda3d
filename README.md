@@ -4,12 +4,12 @@ Nirai's Panda3D
 Panda3D is a game engine, a framework for 3D rendering and game development for
 Python and C++ programs.  Panda3D is open-source and free for any purpose,
 including commercial ventures, thanks to its
-[liberal license](https://www.panda3d.org/license.php).  To learn more about
-Panda3D's capabilities, visit the [gallery](https://www.panda3d.org/gallery.php)
-and the [feature list](https://www.panda3d.org/features.php).  To learn how to
-use Panda3D, check the [documentation](https://www.panda3d.org/documentation.php)
+[liberal license](https://www.panda3d.org/license/). To learn more about
+Panda3D's capabilities, visit the [gallery](https://www.panda3d.org/gallery/)
+and the [feature list](https://www.panda3d.org/features/).  To learn how to
+use Panda3D, check the [documentation](https://www.panda3d.org/documentation/)
 resources. If you get stuck, ask for help from our active
-[community](https://www.panda3d.org/community.php).
+[community](https://discourse.panda3d.org).
 
 Panda3D is licensed under the Modified BSD License.  See the LICENSE file for
 more details.
@@ -50,7 +50,7 @@ If you are on Ubuntu, this command should cover the
 third-party packages:
 
 ```bash
-sudo apt-get install build-essential pkg-config python-dev libpng-dev libjpeg-dev libtiff-dev zlib1g-dev libssl-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxxf86dga-dev libxcursor-dev bison flex libfreetype6-dev libvorbis-dev libeigen3-dev libopenal-dev libode-dev libbullet-dev nvidia-cg-toolkit libgtk2.0-dev libassimp-dev libopenexr-dev
+sudo apt-get install build-essential pkg-config fakeroot python-dev libpng-dev libjpeg-dev libtiff-dev zlib1g-dev libssl-dev libx11-dev libgl1-mesa-dev libxrandr-dev libxxf86dga-dev libxcursor-dev bison flex libfreetype6-dev libvorbis-dev libeigen3-dev libopenal-dev libode-dev libbullet-dev nvidia-cg-toolkit libgtk2.0-dev libassimp-dev libopenexr-dev
 ```
 
 After acquiring the dependencies, you may simply build Panda3D from the terminal

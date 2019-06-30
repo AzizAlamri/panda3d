@@ -659,6 +659,10 @@ rebuild_bitplanes() {
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
+
+    // Mark the GSG as supporting multisampling, so that it will respect an
+    // AntialiasAttrib with mode M_multisample.
+    glgsg->_supports_multisample = true;
   } else {
     glDisable(GL_MULTISAMPLE);
   }
@@ -1162,12 +1166,6 @@ bind_slot_multisample(bool rb_resize, Texture **attach, RenderTexturePlane slot,
     GLuint gl_format = GL_RGBA;
 #ifndef OPENGLES
     switch (slot) {
-      case RTP_aux_rgba_0:
-      case RTP_aux_rgba_1:
-      case RTP_aux_rgba_2:
-      case RTP_aux_rgba_3:
-        gl_format = GL_RGBA;
-        break;
       case RTP_aux_hrgba_0:
       case RTP_aux_hrgba_1:
       case RTP_aux_hrgba_2:
@@ -1180,8 +1178,18 @@ bind_slot_multisample(bool rb_resize, Texture **attach, RenderTexturePlane slot,
       case RTP_aux_float_3:
         gl_format = GL_RGBA32F_ARB;
         break;
+      case RTP_aux_rgba_0:
+      case RTP_aux_rgba_1:
+      case RTP_aux_rgba_2:
+      case RTP_aux_rgba_3:
       default:
-        gl_format = GL_RGBA;
+        if (_fb_properties.get_srgb_color()) {
+          gl_format = GL_SRGB8_ALPHA8;
+        } else if (_fb_properties.get_float_color()) {
+          gl_format = GL_RGBA32F_ARB;
+        } else {
+          gl_format = GL_RGBA;
+        }
         break;
     }
 #endif
