@@ -47,7 +47,7 @@ RUN apt-get update && apt-get install -y \
   zlib1g-dev \
    > /dev/null
 RUN easy_install pip
-RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto > /dev/null
+RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace
 
 COPY . /build
 WORKDIR /build
