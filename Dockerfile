@@ -15,8 +15,8 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8 
 
 RUN apt-get update && apt-get install -y software-properties-common > /dev/null
-RUN add-apt-repository ppa:jonathonf/python-2.7
-RUN apt-get update && apt-get install -y \
+RUN apt-get install -y libpython2.7-dev && \
+  apt-get update && apt-get install -y \
   bison \
   build-essential \
   curl \
