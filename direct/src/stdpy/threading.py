@@ -201,17 +201,6 @@ class Lock(core.Mutex):
     def __init__(self, name = "PythonLock"):
         core.Mutex.__init__(self, name)
 
-    def acquire(self, blocking = True):
-        if blocking:
-            core.Mutex.acquire(self)
-            return True
-        else:
-            return core.Mutex.tryAcquire(self)
-
-    __enter__ = acquire
-
-    def __exit__(self, t, v, tb):
-        self.release()
 
 class RLock(core.ReMutex):
     """ This class provides a wrapper around Panda's ReMutex object.
@@ -220,18 +209,6 @@ class RLock(core.ReMutex):
 
     def __init__(self, name = "PythonRLock"):
         core.ReMutex.__init__(self, name)
-
-    def acquire(self, blocking = True):
-        if blocking:
-            core.ReMutex.acquire(self)
-            return True
-        else:
-            return core.ReMutex.tryAcquire(self)
-
-    __enter__ = acquire
-
-    def __exit__(self, t, v, tb):
-        self.release()
 
 
 class Condition(core.ConditionVarFull):
@@ -312,7 +289,7 @@ class Event:
     object. """
 
     def __init__(self):
-        self.__lock = core.Lock("Python Event")
+        self.__lock = core.Mutex("Python Event")
         self.__cvar = core.ConditionVarFull(self.__lock)
         self.__flag = False
 
@@ -325,7 +302,7 @@ class Event:
         self.__lock.acquire()
         try:
             self.__flag = True
-            self.__cvar.signalAll()
+            self.__cvar.notifyAll()
 
         finally:
             self.__lock.release()

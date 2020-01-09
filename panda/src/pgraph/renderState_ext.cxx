@@ -37,7 +37,7 @@ get_composition_cache() const {
     PyObject *tuple = PyTuple_New(2);
     PyObject *a, *b;
     const RenderState *source = _this->_composition_cache.get_key(i);
-    if (source == (RenderState *)NULL) {
+    if (source == nullptr) {
       a = Py_None;
       Py_INCREF(a);
     } else {
@@ -46,7 +46,7 @@ get_composition_cache() const {
                                       true, true, source->get_type_index());
     }
     const RenderState *result = _this->_composition_cache.get_data(i)._result;
-    if (result == (RenderState *)NULL) {
+    if (result == nullptr) {
       b = Py_None;
       Py_INCREF(b);
     } else {
@@ -85,7 +85,7 @@ get_invert_composition_cache() const {
     PyObject *tuple = PyTuple_New(2);
     PyObject *a, *b;
     const RenderState *source = _this->_invert_composition_cache.get_key(i);
-    if (source == (RenderState *)NULL) {
+    if (source == nullptr) {
       a = Py_None;
       Py_INCREF(a);
     } else {
@@ -94,7 +94,7 @@ get_invert_composition_cache() const {
                                       true, true, source->get_type_index());
     }
     const RenderState *result = _this->_invert_composition_cache.get_data(i)._result;
-    if (result == (RenderState *)NULL) {
+    if (result == nullptr) {
       b = Py_None;
       Py_INCREF(b);
     } else {
@@ -118,18 +118,15 @@ get_invert_composition_cache() const {
 PyObject *Extension<RenderState>::
 get_states() {
   extern struct Dtool_PyTypedObject Dtool_RenderState;
-  if (RenderState::_states == (RenderState::States *)NULL) {
-    return PyList_New(0);
-  }
   LightReMutexHolder holder(*RenderState::_states_lock);
 
-  size_t num_states = RenderState::_states->get_num_entries();
+  size_t num_states = RenderState::_states.get_num_entries();
   PyObject *list = PyList_New(num_states);
   size_t i = 0;
 
-  size_t size = RenderState::_states->get_num_entries();
+  size_t size = RenderState::_states.get_num_entries();
   for (size_t si = 0; si < size; ++si) {
-    const RenderState *state = RenderState::_states->get_key(si);
+    const RenderState *state = RenderState::_states.get_key(si);
     state->ref();
     PyObject *a =
       DTool_CreatePyInstanceTyped((void *)state, Dtool_RenderState,
@@ -141,7 +138,5 @@ get_states() {
   nassertr(i == num_states, list);
   return list;
 }
-
-
 
 #endif  // HAVE_PYTHON

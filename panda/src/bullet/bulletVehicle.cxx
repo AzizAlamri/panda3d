@@ -12,6 +12,9 @@
  */
 
 #include "bulletVehicle.h"
+
+#include "config_bullet.h"
+
 #include "bulletWorld.h"
 #include "bulletRigidBodyNode.h"
 #include "bulletWheel.h"
@@ -52,7 +55,7 @@ set_coordinate_system(BulletUpAxis up) {
     _vehicle->setCoordinateSystem(0, 2, 1);
     break;
   default:
-    bullet_cat.error() << "invalid up axis:" << up << endl;
+    bullet_cat.error() << "invalid up axis:" << up << std::endl;
     break;
   }
 }
@@ -76,7 +79,7 @@ BulletRigidBodyNode *BulletVehicle::
 do_get_chassis() {
 
   btRigidBody *bodyPtr = _vehicle->getRigidBody();
-  return (bodyPtr) ? (BulletRigidBodyNode *)bodyPtr->getUserPointer() : NULL;
+  return (bodyPtr) ? (BulletRigidBodyNode *)bodyPtr->getUserPointer() : nullptr;
 }
 
 /**
@@ -168,19 +171,19 @@ set_pitch_control(PN_stdfloat pitch) {
  * Factory method for creating wheels for this vehicle instance.
  */
 BulletWheel BulletVehicle::
-create_wheel() {
+create_wheel(PN_stdfloat suspension_rest_length) {
   LightMutexHolder holder(BulletWorld::get_global_lock());
 
   btVector3 pos(0.0, 0.0, 0.0);
   btVector3 direction = get_axis(_vehicle->getUpAxis());
   btVector3 axle = get_axis(_vehicle->getRightAxis());
 
-  btScalar suspension(0.4);
+  btScalar suspension(suspension_rest_length);
   btScalar radius(0.3);
 
   btWheelInfo &info = _vehicle->addWheel(pos, direction, axle, suspension, radius, _tuning._, false);
 
-  info.m_clientInfo = NULL;
+  info.m_clientInfo = nullptr;
 
   return BulletWheel(info);
 }
@@ -232,7 +235,13 @@ void BulletVehicle::
 do_sync_b2p() {
 
   for (int i=0; i < _vehicle->getNumWheels(); i++) {
-    btWheelInfo info = _vehicle->getWheelInfo(i);
+    btWheelInfo &info = _vehicle->getWheelInfo(i);
+
+    // synchronize the wheels with the (interpolated) chassis worldtransform.
+    // It resets the m_isInContact flag, so restore that afterwards.
+    bool in_contact = info.m_raycastInfo.m_isInContact;
+    _vehicle->updateWheelTransform(i, true);
+    info.m_raycastInfo.m_isInContact = in_contact;
 
     PandaNode *node = (PandaNode *)info.m_clientInfo;
     if (node) {

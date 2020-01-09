@@ -45,8 +45,8 @@ public:
 PUBLISHED:
   virtual LPoint3 get_collision_origin() const;
 
-  INLINE int get_num_points() const;
-  INLINE LPoint3 get_point(int n) const;
+  INLINE size_t get_num_points() const;
+  INLINE LPoint3 get_point(size_t n) const;
   MAKE_SEQ(get_points, get_num_points, get_point);
 
 
@@ -74,8 +74,8 @@ public:
   virtual PStatCollector &get_volume_pcollector();
   virtual PStatCollector &get_test_pcollector();
 
-  virtual void output(ostream &out) const;
-  virtual void write(ostream &out, int indent_level = 0) const;
+  virtual void output(std::ostream &out) const;
+  virtual void write(std::ostream &out, int indent_level = 0) const;
 
   INLINE static void flush_level();
 
@@ -92,6 +92,8 @@ protected:
   test_intersection_from_segment(const CollisionEntry &entry) const;
   virtual PT(CollisionEntry)
   test_intersection_from_parabola(const CollisionEntry &entry) const;
+  virtual PT(CollisionEntry)
+  test_intersection_from_capsule(const CollisionEntry &entry) const;
   virtual PT(CollisionEntry)
   test_intersection_from_box(const CollisionEntry &entry) const;
 
@@ -131,7 +133,6 @@ private:
   INLINE void calc_to_3d_mat(LMatrix4 &to_3d_mat) const;
   INLINE void rederive_to_3d_mat(LMatrix4 &to_3d_mat) const;
   INLINE static LPoint3 to_3d(const LVecBase2 &point2d, const LMatrix4 &to_3d_mat);
-  LPoint3 legacy_to_3d(const LVecBase2 &point2d, int axis) const;
 
   bool clip_polygon(Points &new_points, const Points &source_points,
                     const LPlane &plane) const;

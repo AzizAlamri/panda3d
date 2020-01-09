@@ -106,12 +106,13 @@ PUBLISHED:
 public:
   virtual btCollisionObject *get_object() const;
 
-  virtual void output(ostream &out) const;
+  virtual void output(std::ostream &out) const;
 
   void do_sync_p2b();
   void do_sync_b2p();
 
 protected:
+  virtual void parents_changed();
   virtual void transform_changed();
 
 private:

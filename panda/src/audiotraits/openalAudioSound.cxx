@@ -38,13 +38,13 @@ OpenALAudioSound(OpenALAudioManager* manager,
                  bool positional,
                  int mode) :
   _movie(movie),
-  _sd(NULL),
+  _sd(nullptr),
   _playing_loops(0),
   _playing_rate(0.0),
   _loops_completed(0),
   _source(0),
   _manager(manager),
-  _volume(manager->get_volume()),
+  _volume(1.0f),
   _balance(0),
   _play_rate(1.0),
   _positional(positional),
@@ -109,7 +109,7 @@ cleanup() {
     release_sound_data(true);
   }
   _manager->release_sound(this);
-  _manager = 0;
+  _manager = nullptr;
 }
 
 /**
@@ -373,7 +373,6 @@ read_stream_data(int bytelen, unsigned char *buffer) {
   nassertr(has_sound_data(), 0);
 
   MovieAudioCursor *cursor = _sd->_stream;
-  double length = cursor->length();
   int channels = cursor->audio_channels();
   int rate = cursor->audio_rate();
   int space = bytelen / (channels * 2);
@@ -381,7 +380,7 @@ read_stream_data(int bytelen, unsigned char *buffer) {
 
   while (space && (_loops_completed < _playing_loops)) {
     double t = cursor->tell();
-    double remain = length - t;
+    double remain = cursor->length() - t;
     if (remain > 60.0) {
       remain = 60.0;
     }
@@ -403,9 +402,20 @@ read_stream_data(int bytelen, unsigned char *buffer) {
     if (samples > _sd->_stream->ready()) {
       samples = _sd->_stream->ready();
     }
-    cursor->read_samples(samples, (int16_t *)buffer);
-    size_t hval = AddHash::add_hash(0, (uint8_t*)buffer, samples*channels*2);
-    audio_debug("Streaming " << cursor->get_source()->get_name() << " at " << t << " hash " << hval);
+    samples = cursor->read_samples(samples, (int16_t *)buffer);
+    if (audio_cat.is_debug()) {
+      size_t hval = AddHash::add_hash(0, (uint8_t*)buffer, samples*channels*2);
+      audio_debug("Streaming " << cursor->get_source()->get_name() << " at " << t << " hash " << hval);
+    }
+    if (samples == 0) {
+      _loops_completed += 1;
+      cursor->seek(0.0);
+      if (_playing_loops >= 1000000000) {
+        // Prevent infinite loop if endlessly looping empty sound
+        return fill;
+      }
+      continue;
+    }
     fill += samples;
     space -= samples;
     buffer += (samples * channels * 2);
@@ -836,14 +846,14 @@ get_active() const {
  *
  */
 void OpenALAudioSound::
-set_finished_event(const string& event) {
+set_finished_event(const std::string& event) {
   _finished_event = event;
 }
 
 /**
  *
  */
-const string& OpenALAudioSound::
+const std::string& OpenALAudioSound::
 get_finished_event() const {
   return _finished_event;
 }
@@ -851,7 +861,7 @@ get_finished_event() const {
 /**
  * Get name of sound file
  */
-const string& OpenALAudioSound::
+const std::string& OpenALAudioSound::
 get_name() const {
   return _basename;
 }

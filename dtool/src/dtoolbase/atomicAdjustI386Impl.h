@@ -17,7 +17,7 @@
 #include "dtoolbase.h"
 #include "selectThreadImpl.h"
 
-#if (defined(__i386__) || defined(_M_IX86)) && !defined(__APPLE__)
+#if (defined(__i386__) || defined(_M_IX86)) && !defined(__APPLE__) && !defined(__ANDROID__)
 
 #include "numeric_types.h"
 
@@ -34,7 +34,7 @@ public:
 
   INLINE static void inc(TVOLATILE Integer &var);
   INLINE static bool dec(TVOLATILE Integer &var);
-  INLINE static void add(TVOLATILE Integer &var, Integer delta);
+  INLINE static Integer add(TVOLATILE Integer &var, Integer delta);
   INLINE static Integer set(TVOLATILE Integer &var, Integer new_value);
   INLINE static Integer get(const TVOLATILE Integer &var);
 

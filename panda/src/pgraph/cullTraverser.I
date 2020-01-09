@@ -49,7 +49,7 @@ has_tag_state_key() const {
  * Returns the tag state key that has been specified for the scene's camera,
  * if any.
  */
-INLINE const string &CullTraverser::
+INLINE const std::string &CullTraverser::
 get_tag_state_key() const {
   return _tag_state_key;
 }
@@ -116,6 +116,8 @@ get_camera_mask() const {
 /**
  * Specifies the bounding volume that corresponds to the view frustum.  Any
  * primitives that fall entirely outside of this volume are not drawn.
+ *
+ * Nowadays, this gets set automatically by set_scene().
  */
 INLINE void CullTraverser::
 set_view_frustum(GeometricBoundingVolume *view_frustum) {
@@ -224,7 +226,7 @@ do_traverse(CullTraverserData &data) {
       const FogAttrib *fog = (const FogAttrib *)
         node_reader->get_state()->get_attrib(FogAttrib::get_class_slot());
 
-      if (fog != (const FogAttrib *)NULL && fog->get_fog() != (Fog *)NULL) {
+      if (fog != nullptr && fog->get_fog() != nullptr) {
         // If we just introduced a FogAttrib here, call adjust_to_camera()
         // now.  This maybe isn't the perfect time to call it, but it's good
         // enough; and at this time we have all the information we need for

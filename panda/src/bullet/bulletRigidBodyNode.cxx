@@ -12,7 +12,11 @@
  */
 
 #include "bulletRigidBodyNode.h"
+
+#include "config_bullet.h"
+
 #include "bulletShape.h"
+#include "bulletWorld.h"
 
 TypeHandle BulletRigidBodyNode::_type_handle;
 
@@ -74,7 +78,7 @@ make_copy() const {
  *
  */
 void BulletRigidBodyNode::
-output(ostream &out) const {
+output(std::ostream &out) const {
   LightMutexHolder holder(BulletWorld::get_global_lock());
 
   BulletBodyNode::do_output(out);
@@ -116,7 +120,7 @@ do_set_mass(PN_stdfloat mass) {
   btScalar bt_mass = mass;
   btVector3 bt_inertia(0.0, 0.0, 0.0);
 
-  if (bt_mass > 0.0) {
+  if (bt_mass > 0.0 && !_shapes.empty()) {
     _rigid->getCollisionShape()->calculateLocalInertia(bt_mass, bt_inertia);
   }
 
@@ -352,6 +356,20 @@ do_transform_changed() {
   // Activate the body if it has been sleeping
   if (!_rigid->isActive()) {
     _rigid->activate(true);
+  }
+}
+
+/**
+ *
+ */
+void BulletRigidBodyNode::
+parents_changed() {
+
+  if (_motion.sync_disabled()) return;
+
+  if (get_num_parents() > 0) {
+    LightMutexHolder holder(BulletWorld::get_global_lock());
+    do_transform_changed();
   }
 }
 
