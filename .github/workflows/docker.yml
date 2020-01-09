@@ -10,7 +10,7 @@ jobs:
       - name: login
         run: |
           docker login docker.pkg.github.com -u github -p $TOKEN
-        env: |
+        env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: docker build -t panda3d:latest .
       - run: |
