@@ -1,0 +1,20 @@
+name: Docker
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: login
+        run: |
+          docker login docker.pkg.github.com -u github -p $TOKEN
+        env: |
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: docker build -t panda3d:latest .
+      - run: |
+          docker tag panda3d:latest docker.pkg.github.com/judge2020/panda3d/panda3d:${GITHUB_SHA:0:20}
+          docker tag panda3d:latest docker.pkg.github.com/judge2020/panda3d/panda3d:$(date +%s)
+          docker tag panda3d:latest docker.pkg.github.com/judge2020/panda3d/panda3d:latest
+      - run: docker push docker.pkg.github.com/judge2020/panda3d/panda3d
