@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 MAINTAINER Hunter Ray <docker@judge.sh>
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -6,7 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update && apt-get install -y locales > /dev/null
+RUN echo "deb http://azure.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://azure.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://azure.archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list && \
+    apt-get update && apt-get install -y locales software-properties-common sudo > /dev/null
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
@@ -14,9 +17,8 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 
 ENV LANG en_US.UTF-8 
 
-RUN apt-get update && apt-get install -y software-properties-common > /dev/null
 RUN apt-get install -y libpython2.7-dev && \
-  apt-get update && apt-get install -y \
+  apt-get update && apt-get install -y --no-install-recommends \
   bison \
   build-essential \
   curl \
@@ -45,12 +47,14 @@ RUN apt-get install -y libpython2.7-dev && \
   python-setuptools \
   tzdata \
   zlib1g-dev \
-   > /dev/null
-RUN easy_install pip
+  python2-pip
+
 RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
 
 COPY . /build
 WORKDIR /build
 
-RUN python makepanda/makepanda.py --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer
-RUN dpkg -i *.deb
+RUN python makepanda/makepanda.py --threads 2 --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
+    dpkg -i *.deb && \
+    rm -rf built && \
+    rm -rf *.deb
