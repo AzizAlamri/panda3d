@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   tzdata \
   zlib1g-dev
 
+RUN pip install --upgrade cython wheel
 RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
 
 COPY . /build
