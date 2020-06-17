@@ -7,6 +7,7 @@ jobs:
     runs-on: [ubuntu-latest]
     strategy:
       matrix:
+        fail-fast: false
         dockerfile: ['python2', 'python3']
     steps:
       - uses: actions/checkout@v1
