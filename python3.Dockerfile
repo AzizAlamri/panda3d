@@ -43,7 +43,8 @@ RUN apt-get install -y --no-install-recommends \
   libpython3-dev \
   python3-dev \
   python3-pip \
-  python3-apport && \
+  python3-apport \
+  fakeroot && \
   sudo apt-get clean
 RUN pip3 install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
 
