@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
     runs-on: [ubuntu-latest]
-    stragegy:
+    strategy:
       matrix:
         dockerfile: ['python2', 'python3']
     steps:
