@@ -47,7 +47,7 @@ RUN apt-get install -y libpython2.7-dev && \
   python-setuptools \
   tzdata \
   zlib1g-dev \
-  python2-pip
+  python-pip
 
 RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
 
