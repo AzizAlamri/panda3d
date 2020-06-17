@@ -54,7 +54,7 @@ RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pyte
 COPY . /build
 WORKDIR /build
 
-RUN python makepanda/makepanda.py --threads 2 --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
+RUN python makepanda/makepanda.py --threads $(nproc --all) --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
     dpkg -i *.deb && \
     rm -rf built && \
     rm -rf *.deb

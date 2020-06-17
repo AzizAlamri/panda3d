@@ -50,7 +50,7 @@ RUN pip3 install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl py
 COPY . /build
 WORKDIR /build
 
-RUN python3 makepanda/makepanda.py --threads 2 --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
+RUN python3 makepanda/makepanda.py --threads $(nproc --all) --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
     dpkg -i *.deb && \
     rm -rf built && \
     rm -rf *.deb
