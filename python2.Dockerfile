@@ -48,7 +48,7 @@ RUN apt-get install -y libpython2.7-dev && \
   tzdata \
   zlib1g-dev
 
-RUN easy_install pip
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
 RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
 
 COPY . /build
