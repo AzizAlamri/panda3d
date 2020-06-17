@@ -47,7 +47,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python-setuptools \
   python-pip \
   tzdata \
-  zlib1g-dev
+  zlib1g-dev \
+  fakeroot
 
 RUN pip install --upgrade cython wheel
 RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
