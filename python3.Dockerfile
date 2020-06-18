@@ -47,7 +47,7 @@ RUN apt-get install -y --no-install-recommends \
   fakeroot && \
   apt-get clean && \
   update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
+RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profiling]
 
 COPY . /build
 WORKDIR /build

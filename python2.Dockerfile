@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   fakeroot
 
 RUN pip install --upgrade cython wheel
-RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profile]
+RUN pip install sentry-sdk faulthandler requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profiling]
 
 COPY . /build
 WORKDIR /build
