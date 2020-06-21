@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM FROM docker.pkg.github.com/judge2020/dockerfiles/ubuntu-python36:latest
 MAINTAINER Hunter Ray <docker@judge.sh>
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -40,10 +40,6 @@ RUN apt-get install -y --no-install-recommends \
   python-setuptools \
   tzdata \
   zlib1g-dev \
-  libpython3-dev \
-  python3-dev \
-  python3-pip \
-  python3-apport \
   fakeroot && \
   apt-get clean && \
   update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
