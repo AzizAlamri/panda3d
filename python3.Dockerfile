@@ -40,9 +40,7 @@ RUN apt-get install -y --no-install-recommends \
   python-setuptools \
   tzdata \
   zlib1g-dev \
-  fakeroot && \
-  apt-get clean && \
-  update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+  fakeroot
 RUN pip install sentry-sdk requests pymongo pyyaml semidbm six pytest pycurl pycrypto ddtrace[profiling]
 
 COPY . /build
