@@ -1,4 +1,4 @@
-FROM FROM docker.pkg.github.com/judge2020/dockerfiles/ubuntu-python36:latest
+FROM docker.pkg.github.com/judge2020/dockerfiles/ubuntu-python36:latest
 MAINTAINER Hunter Ray <docker@judge.sh>
 
 ENV DEBIAN_FRONTEND=noninteractive
