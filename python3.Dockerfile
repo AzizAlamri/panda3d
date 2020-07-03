@@ -47,6 +47,6 @@ COPY . /build
 WORKDIR /build
 
 RUN python3 makepanda/makepanda.py --threads $(nproc --all) --everything --no-contrib --no-fmodex --no-physx --no-bullet --no-pview  --no-swscale --no-swresample --no-speedtree --no-vrpn --no-artoolkit --no-opencv --no-directcam --no-vision --no-rocket --no-awesomium --no-deploytools --no-skel --no-ffmpeg --no-eigen --no-assimp --no-gles --no-gles2 --no-egl --no-gtk --installer && \
-    dpkg -ignore-depends=python3.6 -i *.deb && \
+    dpkg --ignore-depends=python3.6 -i *.deb && \
     rm -rf built && \
     rm -rf *.deb
